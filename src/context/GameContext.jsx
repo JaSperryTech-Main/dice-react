@@ -24,6 +24,10 @@ class Player {
     this.stateChanged();
   }
 
+  get gold() {
+    return this._state.gold;
+  }
+
   addDice(id) {
     const newDices = [...this._state.dices, id];
     this.dices = newDices;
