@@ -1,9 +1,49 @@
 import { usePlayer } from '../../context/PlayerContext';
+import { useDice } from '../../context/DiceContext.jsx';
+import Roll from 'roll';
+
+const roll = new Roll();
 
 const DicePage = () => {
   const { player, addGold } = usePlayer();
+  const { dice } = useDice();
+
   const onRoll = () => {
-    addGold(1);
+    const diceElements = document.querySelectorAll('.dice');
+
+    const randomResults = player.dices.map((diceType) => {
+      const { sides, multiplier } = dice[diceType];
+
+      let finalMultiplier = multiplier;
+
+      // Roll the dice using the correct number of sides
+      const result = roll.roll(`1d${sides}`).result;
+
+      // Calculate the final result based on the multiplier
+      const finalResult = result * finalMultiplier;
+
+      return { diceType, multiplier: finalMultiplier, result, finalResult };
+    });
+
+    diceElements.forEach((dice, index) => {
+      let currentRoll = 1; // Starting number for the dice
+
+      // Roll the dice rapidly for 1 second
+      let interval = setInterval(() => {
+        dice.textContent = currentRoll; // Display the current roll
+        currentRoll = Math.floor(Math.random() * 6) + 1; // Random roll (fix if different sides)
+      }, 50); // Change the number every 50ms
+
+      setTimeout(() => {
+        clearInterval(interval); // Stop the rolling
+
+        // Update dice text with final result
+        const resultForDice = randomResults[index % randomResults.length];
+        dice.textContent = resultForDice.finalResult; // Set the dice to the final result
+
+        addGold(resultForDice.finalResult);
+      }, 1000);
+    });
   };
 
   return (

@@ -4,10 +4,6 @@ import { useState } from 'react';
 
 const PlayerContext = createContext();
 
-export const usePlayer = () => {
-  return useContext(PlayerContext);
-};
-
 const createPlayer = (initialState = {}) => ({
   ...{
     dices: ['Normal_D6'],
@@ -58,3 +54,5 @@ export const PlayerProvider = ({ children }) => {
     </PlayerContext.Provider>
   );
 };
+
+export const usePlayer = () => useContext(PlayerContext);
