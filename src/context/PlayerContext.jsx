@@ -27,6 +27,13 @@ export const PlayerProvider = ({ children }) => {
     }));
   };
 
+  const removeGold = (amount) => {
+    setPlayer((prev) => ({
+      ...prev,
+      gold: prev.gold - amount,
+    }));
+  };
+
   const addDice = (id) => {
     setPlayer((prev) => ({
       ...prev,
@@ -46,6 +53,7 @@ export const PlayerProvider = ({ children }) => {
       value={{
         player,
         addGold,
+        removeGold,
         addDice,
         removeDice,
       }}

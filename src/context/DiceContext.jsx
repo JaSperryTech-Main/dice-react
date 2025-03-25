@@ -6,11 +6,11 @@ const DiceContext = createContext();
 
 const createDice = (initialState = {}) => ({
   ...{
-    Normal_D6: { id: 'Normal', sides: 6, multiplier: 1 },
-    Uncommon_D6: { id: 'Uncommon', sides: 6, multiplier: 1.5 },
-    Rare_D6: { id: 'Rare', sides: 6, multiplier: 2 },
-    Epic_D6: { id: 'Epic', sides: 6, multiplier: 2.5 },
-    Legendary_D6: { id: 'Legendary', sides: 6, multiplier: 3 },
+    Normal_D6: { id: 'normal', sides: 6, multiplier: 1 },
+    Uncommon_D6: { id: 'uncommon', sides: 6, multiplier: 1.5 },
+    Rare_D6: { id: 'rare', sides: 6, multiplier: 2 },
+    Epic_D6: { id: 'epic', sides: 6, multiplier: 2.5 },
+    Legendary_D6: { id: 'legendary', sides: 6, multiplier: 3 },
   },
   ...initialState,
 });

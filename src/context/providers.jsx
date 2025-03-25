@@ -1,12 +1,14 @@
-// context/providers.jsx
 import { PlayerProvider } from './PlayerContext';
 import { DiceProvider } from './DiceContext';
 import { PackProvider } from './PackContext';
+import { UpgradeProvider } from './UpgradeContext';
 
 export const AllProviders = ({ children }) => (
   <PlayerProvider>
-    <DiceProvider>
-      <PackProvider>{children}</PackProvider>
-    </DiceProvider>
+    <UpgradeProvider>
+      <PackProvider>
+        <DiceProvider>{children}</DiceProvider>
+      </PackProvider>
+    </UpgradeProvider>
   </PlayerProvider>
 );

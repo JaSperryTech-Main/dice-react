@@ -2,8 +2,13 @@ import { createContext, useContext, useState } from 'react';
 
 // The LootTable class (as you already have)
 class Pack {
-  constructor(table = []) {
+  constructor(table = [], cost) {
     this._table = table;
+    this._cost = cost;
+  }
+
+  get cost() {
+    return this._cost;
   }
 
   addItem(item, weight = 1, quantity = Number.POSITIVE_INFINITY) {
@@ -46,15 +51,14 @@ class Pack {
 
 // Initialize packs:
 const initialPacks = () => {
-  const normalPack = new Pack();
+  const normalPack = new Pack([], 100);
   normalPack.addItem('Normal_D6', 800);
   normalPack.addItem('Uncommon_D6', 300);
   normalPack.addItem('Rare_D6', 100);
   normalPack.addItem('Epic_D6', 25);
   normalPack.addItem('Legendary_D6', 5);
 
-  const uncommonPack = new Pack();
-  // You can add items to this one as well:
+  const uncommonPack = new Pack([], 1000);
   uncommonPack.addItem('Uncommon_D6', 600);
   uncommonPack.addItem('Rare_D6', 200);
   uncommonPack.addItem('Epic_D6', 50);
@@ -77,4 +81,4 @@ export const PackProvider = ({ children }) => {
   );
 };
 
-export const Packs = () => useContext(PackContext);
+export const usePacks = () => useContext(PackContext);
