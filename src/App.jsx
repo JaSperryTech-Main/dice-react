@@ -1,19 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Home } from './pages';
-import { GameProvider } from './context/GameContext.jsx';
+import { PlayerProvider } from './context/PlayerContext.jsx';
 import DefaultLayout from './layout/DefaultLayout';
 
 function App() {
   return (
     <Router>
-      <GameProvider>
+      <PlayerProvider>
         <Routes>
           <Route element={<DefaultLayout />}>
             <Route index element={<Home />} />
           </Route>
         </Routes>
-      </GameProvider>
+      </PlayerProvider>
     </Router>
   );
 }
