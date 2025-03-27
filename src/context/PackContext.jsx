@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from 'react';
 
-// The LootTable class (as you already have)
 class Pack {
   constructor(table = [], cost) {
     this._table = table;

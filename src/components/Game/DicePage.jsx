@@ -1,7 +1,7 @@
 import { usePlayer } from '../../context/PlayerContext';
 import { useDice } from '../../context/DiceContext.jsx';
 import Roll from 'roll';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const roll = new Roll();
 
@@ -9,38 +9,70 @@ const DicePage = () => {
   const { player, addGold } = usePlayer();
   const { dice } = useDice();
   const [isRolling, setIsRolling] = useState(false);
+  const diceRefs = useRef([]);
 
-  const onRoll = () => {
-    if (isRolling) true;
+  // Reset refs when dice change
+  useEffect(() => {
+    diceRefs.current = diceRefs.current.slice(0, player.dices.length);
+  }, [player.dices]);
+
+  const onRoll = async () => {
+    if (isRolling) return;
     setIsRolling(true);
 
-    const diceElements = document.querySelectorAll('.dice');
+    // Capture current dice state to avoid changes during roll
+    const currentDices = [...player.dices];
+    const currentRollSpeed = player.upgrades.rollSpeed || 0;
 
-    const randomResults = player.dices.map((diceType) => {
-      const { sides, multiplier } = dice[diceType];
-      const result = roll.roll(`1d${sides}`).result;
-      return { diceType, result, finalResult: result * multiplier };
+    // Generate results based on current dice
+    const randomResults = currentDices.map((diceType) => {
+      const diceConfig = dice[diceType] || { sides: 6, multiplier: 1 };
+      const result = roll.roll(`1d${diceConfig.sides}`).result;
+      return {
+        diceType,
+        result,
+        finalResult: result * diceConfig.multiplier,
+      };
     });
 
-    diceElements.forEach((dice, index) => {
-      let currentRoll = 1;
+    // Calculate total gold once
+    const totalGold = randomResults.reduce(
+      (sum, { finalResult }) => sum + finalResult,
+      0
+    );
 
-      const interval = setInterval(() => {
-        dice.textContent = currentRoll;
-        currentRoll = Math.floor(Math.random() * 6) + 1;
-      }, 50);
+    // Animate each die
+    const animationPromises = currentDices.map((_, index) => {
+      return new Promise((resolve) => {
+        if (!diceRefs.current[index]) return resolve();
 
-      setTimeout(() => {
-        clearInterval(interval);
-        const resultForDice = randomResults[index % randomResults.length];
-        dice.textContent = resultForDice.result;
-        addGold(resultForDice.finalResult);
-      }, 2000);
+        const diceElement = diceRefs.current[index].querySelector('.dice-text');
+        let currentRoll = 1;
+
+        const interval = setInterval(() => {
+          diceElement.textContent = currentRoll;
+          currentRoll = Math.floor(Math.random() * 6) + 1;
+        }, 50);
+
+        // Calculate duration with safe minimum
+        const baseDuration = Math.random() * (5 - 2) + 2;
+        const speedReduction = 100 * currentRollSpeed;
+        console.log(speedReduction);
+        const duration = Math.max(0, baseDuration * 1000 - speedReduction);
+        console.log(duration);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          diceElement.textContent = randomResults[index].result;
+          resolve();
+        }, duration);
+      });
     });
 
-    setTimeout(() => {
-      setIsRolling(false);
-    }, 2000);
+    // Wait for all animations to complete
+    await Promise.all(animationPromises);
+    addGold(totalGold);
+    setIsRolling(false);
   };
 
   const rarityColors = {
@@ -54,16 +86,23 @@ const DicePage = () => {
   return (
     <div className="flex content-center items-center h-screen w-[66vw] flex-col relative">
       <div className="grid grid-cols-5 gap-x-[5vh] gap-y-[5vw] w-[85%] min-h-[66vh] justify-items-center mt-[5vh] mb-[15vh] overflow-y-auto p-2.5">
-        {player.dices.map((diceType, index) => (
-          <div
-            key={`dice${index}`}
-            className={`dice w-[120px] h-[120px] bg-white border-2 ${
-              rarityColors[dice[diceType]?.id || 'common']
-            } flex justify-center items-center text-[50px] font-bold rounded-[15px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] transition-transform duration-200 ease-in-out transform hover:scale-105 cursor-pointer`}
-          >
-            1 Add multiplier at the bottom right corner
-          </div>
-        ))}
+        {player.dices.map((diceType, index) => {
+          const diceConfig = dice[diceType] || { multiplier: 1 };
+          return (
+            <div
+              key={`dice-${diceType}-${index}`}
+              ref={(el) => (diceRefs.current[index] = el)}
+              className={`dice w-[120px] h-[120px] bg-white border-2 ${
+                rarityColors[diceConfig.id || 'common']
+              } flex justify-center items-center text-[50px] font-bold rounded-[15px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] transition-transform duration-200 ease-in-out transform hover:scale-105 cursor-pointer relative`}
+            >
+              <p className="dice-text">1</p>
+              <div className="absolute bottom-2 right-2 text-[16px] font-semibold text-gray-600">
+                x{diceConfig.multiplier}
+              </div>
+            </div>
+          );
+        })}
       </div>
       <button
         onClick={onRoll}
@@ -74,7 +113,7 @@ const DicePage = () => {
             : 'bg-green-500 hover:bg-green-600 text-white'
         }`}
       >
-        {isRolling ? 'Rolling...' : 'Roll Dice'}
+        {isRolling ? `Rolling...` : 'Roll Dice'}
       </button>
     </div>
   );

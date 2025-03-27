@@ -9,10 +9,7 @@ const createPlayer = (initialState = {}) => ({
     dices: ['Normal_D6'],
     totalRolls: 0,
     gold: 0,
-    upgradeLevel: {
-      normal: 0,
-      golden: 0,
-    },
+    upgrades: {},
   },
   ...initialState,
 });
@@ -48,6 +45,42 @@ export const PlayerProvider = ({ children }) => {
     }));
   };
 
+  const getUpgrades = () => player.upgrades;
+
+  const getUpgrade = (upgrade) => {
+    return player.upgrades[upgrade];
+  };
+
+  const addUpgrade = (upgrade, amount) => {
+    setPlayer((prev) => ({
+      ...prev,
+      upgrades: {
+        ...prev.upgrades,
+        [upgrade]: (prev.upgrades[upgrade] || 0) + amount,
+      },
+    }));
+  };
+
+  const removeUpgrade = (upgrade, amount) => {
+    setPlayer((prev) => ({
+      ...prev,
+      upgrades: {
+        ...prev.upgrades,
+        [upgrade]: prev.upgrades[upgrade] - amount,
+      },
+    }));
+  };
+
+  const setUpgrade = (upgrade, amount) => {
+    setPlayer((prev) => ({
+      ...prev,
+      upgrades: {
+        ...prev.upgrades,
+        [upgrade]: (prev.upgrades[upgrade] = amount),
+      },
+    }));
+  };
+
   return (
     <PlayerContext.Provider
       value={{
@@ -56,6 +89,11 @@ export const PlayerProvider = ({ children }) => {
         removeGold,
         addDice,
         removeDice,
+        getUpgrades,
+        getUpgrade,
+        addUpgrade,
+        removeUpgrade,
+        setUpgrade,
       }}
     >
       {children}
