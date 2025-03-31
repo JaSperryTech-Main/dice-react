@@ -51,20 +51,33 @@ const DisplayBar = () => {
   }, [player.upgrades]);
 
   return (
-    <aside className="w-[33vw] h-screen border border-black p-5 box-border bg-[#f8f8f8] flex flex-col text-center">
+    <aside className="w-[33vw] h-screen p-5 box-border bg-gradient-to-b from-gray-100 to-gray-200 flex flex-col text-center shadow-lg border-l border-gray-300">
       {/* Gold + Tabs */}
-      <div className="w-full flex justify-between items-center mb-5">
-        <p className="text-lg font-semibold">Gold: {player.gold}</p>
-        <div className="flex gap-2">
+      <div className="w-full flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold text-amber-600">
+            {player.gold}
+          </span>
+          <span className="text-lg font-semibold text-gray-700">Gold</span>
+        </div>
+        <div className="flex gap-2 bg-gray-200 p-1 rounded-lg">
           <button
             onClick={() => setActivePage('upgrades')}
-            className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
+            className={`px-4 py-1 rounded-md transition-all ${
+              activePage === 'upgrades'
+                ? 'bg-blue-500 text-white shadow-md'
+                : 'bg-gray-100 hover:bg-gray-300 text-gray-700'
+            }`}
           >
             Upgrades
           </button>
           <button
             onClick={() => setActivePage('packs')}
-            className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
+            className={`px-4 py-1 rounded-md transition-all ${
+              activePage === 'packs'
+                ? 'bg-blue-500 text-white shadow-md'
+                : 'bg-gray-100 hover:bg-gray-300 text-gray-700'
+            }`}
           >
             Packs
           </button>
@@ -72,68 +85,104 @@ const DisplayBar = () => {
       </div>
 
       {activePage === 'upgrades' && (
-        <div className="flex flex-col overflow-x-scroll">
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Owned Upgrades - Horizontal Scroll */}
-          <div className="relative mb-5">
-            <div className="overflow-x-scroll whitespace-nowrap pb-3 ">
-              <div className="flex gap-4 max-h-max mb-1">
-                {Object.entries(upgradesState)
-                  .filter(([_, count]) => count > 0)
-                  .map(([upgradeId, count]) => {
-                    const upgrade = upgrades.find((u) => u.id === upgradeId);
-                    if (!upgrade) return null;
+          <div className="mb-6">
+            <h3 className="text-left text-gray-600 font-medium mb-2">
+              Your Upgrades
+            </h3>
+            <div className="relative">
+              <div className="overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                <div className="flex gap-4">
+                  {Object.entries(upgradesState)
+                    .filter(([_, count]) => count > 0)
+                    .map(([upgradeId, count]) => {
+                      const upgrade = upgrades.find((u) => u.id === upgradeId);
+                      if (!upgrade) return null;
 
-                    return (
-                      <div
-                        key={upgradeId}
-                        className="flex-shrink-0 w-[calc(33.33%-1rem)]"
-                      >
-                        <div className="flex flex-col items-center p-2 bg-gray-100 rounded h-full">
-                          <img
-                            src={upgrade.image}
-                            alt={upgrade.title}
-                            className="w-16 h-16 mb-2"
-                          />
-                          <span className="font-bold">{upgrade.title}</span>
-                          <span className="text-sm text-gray-600">
-                            Owned: {count}
-                          </span>
+                      return (
+                        <div
+                          key={upgradeId}
+                          className="flex-shrink-0 w-28 bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex flex-col items-center">
+                            <img
+                              src={upgrade.image}
+                              alt={upgrade.title}
+                              className="w-12 h-12 mb-2 object-contain"
+                            />
+                            <span className="font-bold text-sm text-gray-800 truncate w-full">
+                              {upgrade.title}
+                            </span>
+                            <span className="text-xs text-gray-500 mt-1">
+                              Lv. {count}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Available Upgrades - Vertical List */}
-          <div className="overflow-y-scroll">
-            <div className="space-y-5 mr-5">
+          <div className="flex-1 overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+            <h3 className="text-left text-gray-600 font-medium mb-3">
+              Available Upgrades
+            </h3>
+            <div className="space-y-4">
               {upgrades.map((upgrade) => {
                 const currentCount = upgradesState[upgrade.id] || 0;
                 const nextCost = upgrade.cost * (currentCount + 1);
+                const canAfford = player.gold >= nextCost;
 
                 return (
                   <div
                     key={upgrade.id}
-                    className="grid grid-cols-2 grid-rows-2 gap-2 p-4 border rounded bg-white shadow"
+                    className="grid grid-cols-2 gap-3 p-4 rounded-lg bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all"
                   >
-                    <h2 className="col-start-1 row-start-1 self-start justify-self-start text-xl font-bold">
-                      {upgrade.title}{' '}
-                      {currentCount > 0 && `(Lv. ${currentCount})`}
-                    </h2>
-                    <h4 className="col-start-2 row-start-1 self-start justify-self-end text-md">
-                      Cost: {nextCost}
-                    </h4>
-                    <p className="col-start-1 row-start-2 self-end justify-self-start text-sm">
-                      {upgrade.description}
-                    </p>
+                    <div className="col-span-2 flex items-start gap-3">
+                      <div className="bg-gray-100 p-2 rounded-lg">
+                        <img
+                          src={upgrade.image}
+                          alt={upgrade.title}
+                          className="w-10 h-10 object-contain"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h2 className="font-bold text-gray-800">
+                          {upgrade.title}{' '}
+                          {currentCount > 0 && (
+                            <span className="text-sm font-normal text-gray-500">
+                              (Level {currentCount})
+                            </span>
+                          )}
+                        </h2>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {upgrade.description}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <span
+                        className={`text-sm font-medium ${
+                          canAfford ? 'text-green-600' : 'text-red-500'
+                        }`}
+                      >
+                        {nextCost} Gold
+                      </span>
+                    </div>
                     <button
                       onClick={() => handleBuyUpgrade(upgrade.id)}
-                      className="col-start-2 row-start-2 self-end justify-self-end bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-                      disabled={player.gold < nextCost}
+                      className={`py-2 px-4 rounded-md font-medium transition-all ${
+                        canAfford
+                          ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-sm'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      }`}
+                      disabled={!canAfford}
                     >
-                      {currentCount > 0 ? 'Upgrade' : 'Buy'}
+                      {currentCount > 0 ? 'Upgrade' : 'Purchase'}
                     </button>
                   </div>
                 );
@@ -143,24 +192,51 @@ const DisplayBar = () => {
         </div>
       )}
 
-      {/* Packs Section (unchanged) */}
+      {/* Packs Section */}
       {activePage === 'packs' && (
-        <div className="flex flex-col gap-4">
-          {Object.entries(Packs).map(([packName, packInstance]) => (
-            <div
-              key={packName}
-              className="grid grid-cols-1 gap-2 p-4 border rounded bg-white shadow"
-            >
-              <h2 className="text-xl font-bold">{packName}</h2>
-              <button
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                onClick={() => handleOpenPack(packName, packInstance)}
-                disabled={disabledPack === packName}
-              >
-                {disabledPack === packName ? 'Opened' : `Open ${packName}`}
-              </button>
-            </div>
-          ))}
+        <div className="flex-1 overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+          <h3 className="text-left text-gray-600 font-medium mb-3">
+            Available Packs
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            {Object.entries(Packs).map(([packName, packInstance]) => {
+              const canAfford = player.gold >= packInstance.cost;
+              const isDisabled = disabledPack === packName;
+
+              return (
+                <div
+                  key={packName}
+                  className="p-4 rounded-lg bg-white shadow-sm border border-gray-200 hover:shadow-md transition-all"
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="text-lg font-bold text-gray-800">
+                      {packName}
+                    </h2>
+                    <span
+                      className={`text-sm font-medium ${
+                        canAfford ? 'text-green-600' : 'text-red-500'
+                      }`}
+                    >
+                      {packInstance.cost} Gold
+                    </span>
+                  </div>
+                  <button
+                    className={`w-full py-2 px-4 rounded-md font-medium transition-all ${
+                      isDisabled
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : canAfford
+                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-sm'
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    }`}
+                    onClick={() => handleOpenPack(packName, packInstance)}
+                    disabled={isDisabled || !canAfford}
+                  >
+                    {isDisabled ? 'Opening...' : `Open ${packName}`}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </aside>
