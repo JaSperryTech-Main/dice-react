@@ -6,7 +6,7 @@ const PlayerContext = createContext();
 
 const createPlayer = (initialState = {}) => ({
   ...{
-    dices: ['Normal_D6'],
+    dices: ['Normal_D1'],
     totalRolls: 0,
     gold: 0,
     upgrades: {},

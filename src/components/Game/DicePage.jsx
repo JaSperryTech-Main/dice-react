@@ -20,11 +20,10 @@ const DicePage = () => {
     if (isRolling) return;
     setIsRolling(true);
 
-    // Capture current dice state to avoid changes during roll
     const currentDices = [...player.dices];
     const currentRollSpeed = player.upgrades.rollSpeed || 0;
 
-    // Generate results based on current dice
+    // Generate results
     const randomResults = currentDices.map((diceType) => {
       const diceConfig = dice[diceType] || { sides: 6, multiplier: 1 };
       const result = roll.roll(`1d${diceConfig.sides}`).result;
@@ -32,44 +31,49 @@ const DicePage = () => {
         diceType,
         result,
         finalResult: result * diceConfig.multiplier,
+        sides: diceConfig.sides,
       };
     });
 
-    // Calculate total gold once
     const totalGold = randomResults.reduce(
       (sum, { finalResult }) => sum + finalResult,
       0
     );
 
-    // Animate each die
+    // Animate dice rolls
     const animationPromises = currentDices.map((_, index) => {
       return new Promise((resolve) => {
-        if (!diceRefs.current[index]) return resolve();
+        const diceElement =
+          diceRefs.current[index]?.querySelector('.dice-text');
+        if (!diceElement) return resolve();
 
-        const diceElement = diceRefs.current[index].querySelector('.dice-text');
         let currentRoll = 1;
+        const sides = randomResults[index].sides;
 
-        const interval = setInterval(() => {
+        const updateRoll = () => {
+          currentRoll = Math.floor(Math.random() * sides) + 1;
           diceElement.textContent = currentRoll;
-          currentRoll = Math.floor(Math.random() * 6) + 1;
-        }, 50);
+          if (!rollingDone) requestAnimationFrame(updateRoll);
+        };
 
-        // Calculate duration with safe minimum
+        let rollingDone = false;
+        updateRoll();
+
         const baseDuration = Math.random() * (5 - 2) + 2;
-        const speedReduction = 100 * currentRollSpeed;
-        console.log(speedReduction);
-        const duration = Math.max(0, baseDuration * 1000 - speedReduction);
-        console.log(duration);
+        const speedReduction = Math.min(
+          100 * currentRollSpeed,
+          baseDuration * 1000
+        );
+        const duration = Math.max(500, baseDuration * 1000 - speedReduction);
 
         setTimeout(() => {
-          clearInterval(interval);
+          rollingDone = true;
           diceElement.textContent = randomResults[index].result;
           resolve();
         }, duration);
       });
     });
 
-    // Wait for all animations to complete
     await Promise.all(animationPromises);
     addGold(totalGold);
     setIsRolling(false);

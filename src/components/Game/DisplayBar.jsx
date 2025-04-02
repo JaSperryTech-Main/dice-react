@@ -40,7 +40,7 @@ const DisplayBar = () => {
       const item = packInstance.chooseItem();
       addDice(item);
       setDisabledPack(packName);
-      setTimeout(() => setDisabledPack(null), 1000);
+      setTimeout(() => setDisabledPack(null), 250);
     } else {
       console.log('Not Enough Gold');
     }

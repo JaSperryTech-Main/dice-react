@@ -12,24 +12,6 @@ const createUpgrade = (initialState = []) => [
       cost: 1,
       description: 'Desceases Roll Speed',
     },
-    {
-      id: 'upgarde2',
-      title: 'Upgarde 2',
-      cost: 1,
-      description: 'upgarde2',
-    },
-    {
-      id: 'upgarde3',
-      title: 'upgarde3',
-      cost: 1,
-      description: 'upgarde3',
-    },
-    {
-      id: 'upgarde4',
-      title: 'upgarde4',
-      cost: 1,
-      description: 'upgarde4',
-    },
   ],
   ...initialState,
 ];

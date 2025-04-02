@@ -50,22 +50,57 @@ class Pack {
 
 // Initialize packs:
 const initialPacks = () => {
-  const normalPack = new Pack([], 100);
-  normalPack.addItem('Normal_D6', 800);
-  normalPack.addItem('Uncommon_D6', 300);
-  normalPack.addItem('Rare_D6', 100);
-  normalPack.addItem('Epic_D6', 25);
-  normalPack.addItem('Legendary_D6', 5);
+  // Normal Pack (Common - Cheap with basic odds)
+  const normalPack = new Pack([], 5); // Base price: 5 coins
+  normalPack.addItem('Normal_D1', 650); // Very common
+  normalPack.addItem('Normal_D2', 250);
+  normalPack.addItem('Normal_D3', 80);
+  normalPack.addItem('Normal_D4', 15);
+  normalPack.addItem('Normal_D5', 3);
+  normalPack.addItem('Normal_D6', 1); // Rarest (0.1% chance)
 
-  const uncommonPack = new Pack([], 1000);
-  uncommonPack.addItem('Uncommon_D6', 600);
-  uncommonPack.addItem('Rare_D6', 200);
-  uncommonPack.addItem('Epic_D6', 50);
-  uncommonPack.addItem('Legendary_D6', 10);
+  // Uncommon Pack (Slightly better - Mid-price)
+  const uncommonPack = new Pack([], 50); // Base price: 50 coins
+  uncommonPack.addItem('Uncommon_D1', 500);
+  uncommonPack.addItem('Uncommon_D2', 300);
+  uncommonPack.addItem('Uncommon_D3', 150);
+  uncommonPack.addItem('Uncommon_D4', 40);
+  uncommonPack.addItem('Uncommon_D5', 8);
+  uncommonPack.addItem('Uncommon_D6', 2); // Rare (0.2% chance)
+
+  // Rare Pack (Better rewards - Higher price)
+  const rarePack = new Pack([], 200); // Base price: 200 coins
+  rarePack.addItem('Rare_D1', 400); // Common
+  rarePack.addItem('Rare_D2', 300);
+  rarePack.addItem('Rare_D3', 200);
+  rarePack.addItem('Rare_D4', 80);
+  rarePack.addItem('Rare_D5', 15);
+  rarePack.addItem('Rare_D6', 5); // Rare (0.5% chance)
+
+  // Epic Pack (High-tier - Expensive)
+  const epicPack = new Pack([], 750); // Base price: 750 coins
+  epicPack.addItem('Epic_D1', 300);
+  epicPack.addItem('Epic_D2', 250);
+  epicPack.addItem('Epic_D3', 200);
+  epicPack.addItem('Epic_D4', 100);
+  epicPack.addItem('Epic_D5', 30);
+  epicPack.addItem('Epic_D6', 10); // Very rare (1% chance)
+
+  // Legendary Pack (Best rewards - Very expensive)
+  const legendaryPack = new Pack([], 2500); // Base price: 2500 coins
+  legendaryPack.addItem('Legendary_D1', 200);
+  legendaryPack.addItem('Legendary_D2', 150);
+  legendaryPack.addItem('Legendary_D3', 100);
+  legendaryPack.addItem('Legendary_D4', 50);
+  legendaryPack.addItem('Legendary_D5', 20);
+  legendaryPack.addItem('Legendary_D6', 5); // Ultra-rare (1% chance)
 
   return {
-    'Normal D6 Pack': normalPack,
-    'Uncommon D6 Pack': uncommonPack,
+    'Normal Pack': normalPack,
+    'Uncommon Pack': uncommonPack,
+    'Rare Pack': rarePack,
+    'Epic Pack': epicPack,
+    'Legendary Pack': legendaryPack,
   };
 };
 
